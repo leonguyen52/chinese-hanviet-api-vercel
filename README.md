@@ -1,8 +1,15 @@
-## Deploy JSON Server to Vercel
+## Overview
 
-A template to deploy [JSON Server](https://github.com/typicode/json-server) to [Vercel](https://vercel.com), allow you to run fake REST API online!
+An API built using [json-server](https://github.com/typicode/json-server) that allows you to look up Chinese and Han Viet cognates, this original idea is started by [ryanphung](https://github.com/ryanphung) and I updated it to match my own requirements with new database.
 
-Demo from this repository: 
+It will be divided into 2 type "tughep" (2 chinese words) and "tudon" (single chinese word) while looking up
+
+## Demo
+
+* https://xxx.vercel.app/tughep?word_like=可
+* https://xxx.vercel.app/tughep?hanviet=trạng%20thái
+* https://xxx.vercel.app/tudon?word_like=可
+* https://xxx.vercel.app/tudon?hanviet=trạng%20thái
 
 1. https://json-server-in.vercel.app
 2. https://json-server-in.vercel.app/api/posts
@@ -16,18 +23,6 @@ Demo from this repository:
 5. In the "**Configure Project**" screen, leave everything default and click "**Deploy**".
 6. Wait until deployment is done, and your own JSON server is ready to serve!
 
-## Default `db.json`
-
-```json
-{
-  "posts": [
-    { "id": 1, "title": "json-server", "author": "typicode" }
-  ],
-  "comments": [
-    { "id": 1, "body": "some comment", "postId": 1 }
-  ],
-  "profile": { "name": "typicode" }
-}
 ```
 
 ## Reference
