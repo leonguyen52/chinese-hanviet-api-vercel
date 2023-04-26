@@ -2,9 +2,9 @@
 
 An API built using [json-server](https://github.com/typicode/json-server) that allows you to look up Chinese and Han Viet cognates, this original idea is started by [ryanphung](https://github.com/ryanphung) and I updated it to match my own requirements with new database.
 
-It will be divided into 2 type "tughep" (2 chinese words) and "tudon" (single chinese word) while looking up
-/tughep 23940x words
-/tudon 11411x words
+It will be divided into 2 type "tughep" (2 chinese words) and "tudon" (single chinese word) while looking up dictionary.
+* /tughep 23940x words
+* /tudon 11411x words
 
 ## Demo
 
