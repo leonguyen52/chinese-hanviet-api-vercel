@@ -13,8 +13,8 @@ It will be divided into 2 type "tughep" (2 chinese words) and "tudon" (single ch
 * https://xxx.vercel.app/tudon?word_like=可
 * https://xxx.vercel.app/tudon?hanviet=trạng%20thái
 
-1. https://json-server-in.vercel.app
-2. https://json-server-in.vercel.app/api/posts
+Also support rewrite, check in /api/server.js
+* https://json-server-in.vercel.app/api/posts
 
 ### How to use
 
