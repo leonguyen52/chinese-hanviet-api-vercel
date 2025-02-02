@@ -179,6 +179,48 @@
             scroll-behavior: smooth;
         }
 
+        .analysis-flex-container {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .original-text-section,
+        .compound-words-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .analysis-subtitle {
+            font-weight: 500;
+            color: var(--accent-color);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .compound-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .compound-link {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--bg-color);
+            border-radius: 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid var(--accent-color);
+        }
+
+        .compound-link:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -197,6 +239,15 @@
 
             .word-details {
                 grid-template-columns: 1fr;
+            }
+
+            .analysis-flex-container {
+                flex-direction: column;
+            }
+
+            .original-text-section,
+            .compound-words-section {
+                width: 100%;
             }
         }
     </style>
@@ -261,7 +312,6 @@
                 const endpoint = type === 'compound' ? 'tughep' : 'tudon';
                 const response = await fetch(`${baseUrl}/${endpoint}?word_like=${encodeURIComponent(word)}`);
                 const data = await response.json();
-                console.log(`Response for ${word} (${endpoint}):`, data);
                 return { data, type: endpoint };
             } catch (error) {
                 console.error('Error searching word:', word, error);
@@ -270,7 +320,6 @@
         }
 
         function createResultItemHTML(item, type) {
-            console.log('Item being rendered:', item);
             return `
                 <div class="result-item">
                     <div class="word-details">
@@ -337,26 +386,6 @@
             const analysisDiv = document.createElement('div');
             analysisDiv.className = 'word-analysis';
             
-            const originalSection = document.createElement('div');
-            originalSection.className = 'word-section';
-            const characters = originalText.split('').map(char => {
-                if (containsChinese(char)) {
-                    return `<a href="#char-${char}" class="character-link">${char}</a>`;
-                }
-                return char;
-            }).join('');
-            
-            originalSection.innerHTML = `
-                <div class="section-header gradient-header">Original Text</div>
-                <div class="section-content">
-                    <div class="result-word" style="font-size: 1.2rem; line-height: 1.8;">${characters}</div>
-                </div>
-            `;
-            analysisDiv.appendChild(originalSection);
-
-            const resultsGrid = document.createElement('div');
-            resultsGrid.className = 'results-grid';
-
             const groupedResults = {};
             results.forEach(result => {
                 if (!groupedResults[result.word]) {
@@ -368,22 +397,63 @@
                 groupedResults[result.word][result.type] = result.data;
             });
 
+            const compoundWords = Object.keys(groupedResults).filter(word => 
+                word.length > 1 && groupedResults[word].tughep?.length > 0
+            );
+
+            const originalSection = document.createElement('div');
+            originalSection.className = 'word-section';
+                
+            const characters = originalText.split('').map(char => {
+                if (containsChinese(char)) {
+                    return `<a href="#char-${char}" class="character-link">${char}</a>`;
+                }
+                return char;
+            }).join('');
+                
+            originalSection.innerHTML = `
+                <div class="section-header gradient-header">Text Analysis</div>
+                        <div class="section-content">
+                    <div class="analysis-flex-container">
+                        <div class="original-text-section">
+                            <div class="analysis-subtitle">Original Text:</div>
+                    <div class="result-word" style="font-size: 1.2rem; line-height: 1.8;">
+                        ${characters}
+                        </div>
+                            </div>
+                        ${compoundWords.length > 0 ? `
+                            <div class="compound-words-section">
+                                <div class="analysis-subtitle">Compound Words Found:</div>
+                                <div class="compound-links">
+                                    ${compoundWords.map(word => 
+                                        `<a href="#compound-${word}" class="compound-link">${word}</a>`
+                                    ).join(' ')}
+                    </div>
+                </div>
+                        ` : ''}
+                                </div>
+                            </div>
+                        `;
+            analysisDiv.appendChild(originalSection);
+
+            const resultsGrid = document.createElement('div');
+            resultsGrid.className = 'results-grid';
+
             Object.entries(groupedResults).forEach(([searchedWord, typeResults]) => {
                 const wordSection = document.createElement('div');
                 wordSection.className = 'word-section';
                 
                 let content = '';
-                
                 if (typeResults.tudon.length > 0) {
                     typeResults.tudon.forEach(item => {
-                    content += `
+                        content += `
                             <div class="section-content" id="char-${searchedWord}">
                                 <div class="section-header gradient-header">
                                     <span>Single Character: ${searchedWord}</span>
                                     ${item.frequency ? 
                                         `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
                                         : ''}
-                        </div>
+                                </div>
                                 ${createResultItemHTML(item, 'tudon')}
                             </div>
                         `;
@@ -392,14 +462,14 @@
 
                 if (typeResults.tughep.length > 0) {
                     typeResults.tughep.forEach(item => {
-                    content += `
-                        <div class="section-content">
+                        content += `
+                            <div class="section-content" id="compound-${searchedWord}">
                                 <div class="section-header gradient-header">
                                     <span>Compound Word: ${searchedWord}</span>
                                     ${item.frequency ? 
                                         `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
                                         : ''}
-                        </div>
+                                </div>
                                 ${createResultItemHTML(item, 'tughep')}
                             </div>
                         `;
@@ -416,15 +486,4 @@
 
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const searchQuery = document.getElementById('searchQuery').value.trim();
-
-            if (!containsChinese(searchQuery)) {
-                alert('Please enter Chinese characters.');
-                return;
-            }
-
-            handleSearch(searchQuery);
-        });
-    </script>
-</body>
-</html>
+            const searchQuery = document.getElementById('searchQuery').value
