@@ -145,178 +145,6 @@
             color: var(--accent-color);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Chinese-Han Viet Dictionary</h1>
-        <p>Enter Chinese characters or sentences for instant translation</p>
-    </header>
-
-    <div class="container">
-        <div class="search-container">
-            <form class="search-form" id="searchForm">
-                <div class="form-group">
-                    <label for="searchQuery">Enter Chinese characters or sentence:</label>
-                    <textarea 
-                        id="searchQuery" 
-                        name="searchQuery" 
-                        required 
-                        placeholder="Enter single words, compound words, or complete sentences (e.g., 我们去吃饭)"
-                    ></textarea>
-                </div>
-                <button type="submit" class="search-btn">Analyze</button>
-            </form>
-
-            <div class="results-container" id="results">
-                <!-- Results will be populated here -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const baseUrl = window.location.origin;
-
-        // Helper function to check if a string contains Chinese characters
-        function containsChinese(str) {
-            return /[\u4E00-\u9FFF]/.test(str);
-        }
-
-        // Helper function to split Chinese text into words
-        function splitChineseText(text) {
-            // Remove any non-Chinese characters and spaces
-            const cleanText = text.replace(/[^\u4E00-\u9FFF]/g, '');
-            
-            const words = [];
-            let i = 0;
-            
-            while (i < cleanText.length) {
-                // Try to match 2 characters first (compound words)
-                if (i + 1 < cleanText.length) {
-                    words.push({
-                        word: cleanText.slice(i, i + 2),
-                        type: 'compound'
-                    });
-                }
-                // Always include single character
-                words.push({
-                    word: cleanText.slice(i, i + 1),
-                    type: 'single'
-                });
-                i++;
-            }
-            
-            return words;
-        }
-
-        async function searchWord(word, type) {
-            try {
-                const endpoint = type === 'compound' ? 'tughep' : 'tudon';
-                const response = await fetch(`${baseUrl}/${endpoint}?word_like=${encodeURIComponent(word)}`);
-                const data = await response.json();
-                return { data, type: endpoint };
-            } catch (error) {
-                console.error('Error searching word:', word, error);
-                return { data: [], type: endpoint };
-            }
-        }
-
-        async function handleSearch(text) {
-            const words = splitChineseText(text);
-            const results = [];
-
-            // Show loading state
-            document.getElementById('results').innerHTML = '<div class="loading">Analyzing text...</div>';
-
-            // Search for each word combination
-            for (const wordObj of words) {
-                const result = await searchWord(wordObj.word, wordObj.type);
-                if (result.data.length > 0) {
-                    results.push({
-                        word: wordObj.word,
-                        ...result
-                    });
-                }
-            }
-
-            displayResults(text, results);
-        }
-
-        function displayResults(originalText, results) {
-            const resultsContainer = document.getElementById('results');
-            resultsContainer.innerHTML = '';
-
-            if (!results.length) {
-                resultsContainer.innerHTML = '<p>No results found.</p>';
-                return;
-            }
-
-            // Display original text
-            const analysisDiv = document.createElement('div');
-            analysisDiv.className = 'word-analysis';
-            analysisDiv.innerHTML = `
-                <div class="word-original">Original text: ${originalText}</div>
-            `;
-
-            results.forEach(result => {
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'result-item';
-
-                const typeLabel = result.type === 'tughep' ? 'Compound Word' : 'Single Character';
-                
-                let content = `
-                    <div class="result-type">${typeLabel}: ${result.word}</div>
-                `;
-
-                result.data.forEach(item => {
-                    if (result.type === 'tughep') {
-                        content += `
-                            <div><span>Chinese Word:</span> ${item.word}</div>
-                            <div><span>Traditional:</span> ${item.traditional || '-'}</div>
-                            <div><span>Pinyin:</span> ${item.pinyin || '-'}</div>
-                            <div><span>Han Viet:</span> ${item.hanviet}</div>
-                            <div><span>Meaning:</span> ${item.meaning || '-'}</div>
-                            ${item.frequency ? `<div><span>Frequency:</span> ${item.frequency}</div>` : ''}
-                        `;
-                    } else {
-                        content += `
-                            <div><span>Chinese Word:</span> ${item.word}</div>
-                            <div><span>Han Viet:</span> ${item.hanviet}</div>
-                            <div><span>Pronunciation:</span> ${item.pronunciation || '-'}</div>
-                        `;
-                    }
-                });
-
-                resultDiv.innerHTML = content;
-                analysisDiv.appendChild(resultDiv);
-            });
-
-            resultsContainer.appendChild(analysisDiv);
-        }
-
-        // Form submission handling
-        document.getElementById('searchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const searchQuery = document.getElementById('searchQuery').value.trim();
-
-            if (!containsChinese(searchQuery)) {
-                alert('Please enter Chinese characters.');
-                return;
-            }
-
-            handleSearch(searchQuery);
-        });
-    </script>
-</body>
-</html>
-<style>
-    /* ... previous styles remain ... */
-
     .word-section {
         margin-bottom: 2rem;
         border: 1px solid rgba(78, 205, 196, 0.2);
@@ -387,67 +215,190 @@
         margin-right: 0.5rem;
     }
 
-    @media (max-width: 768px) {
-        .word-details {
-            grid-template-columns: 1fr;
+        .results-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
+
+        .results-grid.dual-column {
+            grid-template-columns: 1fr 1fr;
     }
-</style><script>
-    // ... previous functions remain the same ...
 
-    function displayResults(originalText, results) {
-        const resultsContainer = document.getElementById('results');
-        resultsContainer.innerHTML = '';
-
-        if (!results.length) {
-            resultsContainer.innerHTML = '<p>No results found.</p>';
-            return;
+        .column-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        // Display original text
-        const analysisDiv = document.createElement('div');
-        analysisDiv.className = 'word-analysis';
-        
-        // Add original text section
-        const originalSection = document.createElement('div');
-        originalSection.className = 'word-section';
-        originalSection.innerHTML = `
-            <div class="section-header">Original Text</div>
-            <div class="section-content">
-                <div class="result-word">${originalText}</div>
-            </div>
-        `;
-        analysisDiv.appendChild(originalSection);
+        .column-title {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: -0.5rem;
+            font-weight: 500;
+        }
 
-        // Group results by word and type
-        const groupedResults = {};
-        results.forEach(result => {
-            const key = `${result.word}-${result.type}`;
-            if (!groupedResults[key]) {
-                groupedResults[key] = {
-                    word: result.word,
-                    type: result.type,
-                    data: []
-                };
+        @media (max-width: 1024px) {
+            .results-grid.dual-column {
+                grid-template-columns: 1fr;
             }
-            groupedResults[key].data = groupedResults[key].data.concat(result.data);
-        });
 
-        // Display each group in its own section
-        Object.values(groupedResults).forEach(group => {
-            const section = document.createElement('div');
-            section.className = 'word-section';
+            .column-section {
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .word-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Chinese-Han Viet Dictionary</h1>
+        <p>Enter Chinese characters or sentences for instant translation</p>
+    </header>
+
+    <div class="container">
+        <div class="search-container">
+            <form class="search-form" id="searchForm">
+                <div class="form-group">
+                    <label for="searchQuery">Enter Chinese characters or sentence:</label>
+                    <textarea 
+                        id="searchQuery" 
+                        name="searchQuery" 
+                        required 
+                        placeholder="Enter single words, compound words, or complete sentences (e.g., 我们去吃饭)"
+                    ></textarea>
+            </div>
+                <button type="submit" class="search-btn">Analyze</button>
+            </form>
+
+            <div class="results-container" id="results">
+                                        </div>
+                                        </div>
+                                    </div>
+
+    <script>
+        const baseUrl = window.location.origin;
+
+        function containsChinese(str) {
+            return /[\u4E00-\u9FFF]/.test(str);
+        }
+
+        function splitChineseText(text) {
+            const cleanText = text.replace(/[^\u4E00-\u9FFF]/g, '');
             
-            const typeLabel = group.type === 'tughep' ? 'Compound Word' : 'Single Character';
-            section.innerHTML = `
-                <div class="section-header">${typeLabel}: ${group.word}</div>
+            const words = [];
+            let i = 0;
+            
+            while (i < cleanText.length) {
+                if (i + 1 < cleanText.length) {
+                    words.push({
+                        word: cleanText.slice(i, i + 2),
+                        type: 'compound'
+                    });
+                }
+                words.push({
+                    word: cleanText.slice(i, i + 1),
+                    type: 'single'
+                });
+                i++;
+            }
+            
+            return words;
+        }
+
+        async function searchWord(word, type) {
+            try {
+                const endpoint = type === 'compound' ? 'tughep' : 'tudon';
+                const response = await fetch(`${baseUrl}/${endpoint}?word_like=${encodeURIComponent(word)}`);
+                const data = await response.json();
+                return { data, type: endpoint };
+            } catch (error) {
+                console.error('Error searching word:', word, error);
+                return { data: [], type: endpoint };
+            }
+        }
+
+        async function handleSearch(text) {
+            const words = splitChineseText(text);
+            const results = [];
+
+            document.getElementById('results').innerHTML = '<div class="loading">Analyzing text...</div>';
+
+            for (const wordObj of words) {
+                const result = await searchWord(wordObj.word, wordObj.type);
+                if (result.data.length > 0) {
+                    results.push({
+                        word: wordObj.word,
+                        ...result
+                    });
+                }
+            }
+
+            displayResults(text, results);
+        }
+
+        function displayResults(originalText, results) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            if (!results.length) {
+                resultsContainer.innerHTML = '<p>No results found.</p>';
+                return;
+            }
+
+            const analysisDiv = document.createElement('div');
+            analysisDiv.className = 'word-analysis';
+            
+            const originalSection = document.createElement('div');
+            originalSection.className = 'word-section';
+            originalSection.innerHTML = `
+                <div class="section-header">Original Text</div>
                 <div class="section-content">
+                    <div class="result-word">${originalText}</div>
+                                        </div>
+                        `;
+            analysisDiv.appendChild(originalSection);
+
+            const groupedByType = {
+                tughep: [],
+                tudon: []
+            };
+
+            results.forEach(result => {
+                const key = result.type;
+                if (!groupedByType[key].find(g => g.word === result.word)) {
+                    groupedByType[key].push({
+                        word: result.word,
+                        type: result.type,
+                        data: result.data
+                    });
+    }
+            });
+
+            const resultsGrid = document.createElement('div');
+            resultsGrid.className = 'results-grid';
+            
+            const hasBothTypes = groupedByType.tughep.length > 0 && groupedByType.tudon.length > 0;
+            if (hasBothTypes) {
+                resultsGrid.classList.add('dual-column');
+            }
+
+            const createSectionContent = (group) => `
+                <div class="result-item">
                     ${group.data.map(item => {
                         const frequency = item.frequency ? 
                             `<div class="result-freq">Frequency: ${item.frequency}</div>` : '';
                         
                         return `
-                            <div class="result-item">
+                            <div>
                                 ${frequency}
                                 <div class="result-word">${item.word}</div>
                                 <div class="word-details">
@@ -482,11 +433,58 @@
                     }).join('')}
                 </div>
             `;
-            analysisDiv.appendChild(section);
-        });
 
-        resultsContainer.appendChild(analysisDiv);
-    }
+            if (hasBothTypes) {
+                const tughepColumn = document.createElement('div');
+                tughepColumn.className = 'column-section';
+                tughepColumn.innerHTML = `
+                    <div class="column-title">Compound Words</div>
+                    ${groupedByType.tughep.map(group => `
+                        <div class="word-section">
+                            <div class="section-header">${group.word}</div>
+                            <div class="section-content">
+                                ${createSectionContent(group)}
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
 
-    // ... remaining code stays the same ...
-</script>
+                const tudonColumn = document.createElement('div');
+                tudonColumn.className = 'column-section';
+                tudonColumn.innerHTML = `
+                    <div class="column-title">Single Characters</div>
+                    ${groupedByType.tudon.map(group => `
+                        <div class="word-section">
+                            <div class="section-header">${group.word}</div>
+                            <div class="section-content">
+                                ${createSectionContent(group)}
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+
+                resultsGrid.appendChild(tughepColumn);
+                resultsGrid.appendChild(tudonColumn);
+            } else {
+                const type = groupedByType.tughep.length > 0 ? 'tughep' : 'tudon';
+                const groups = groupedByType[type];
+                const column = document.createElement('div');
+                column.className = 'column-section';
+                column.innerHTML = groups.map(group => `
+                    <div class="word-section">
+                        <div class="section-header">${group.type === 'tughep' ? 'Compound Word' : 'Single Character'}: ${group.word}</div>
+                        <div class="section-content">
+                            ${createSectionContent(group)}
+                        </div>
+                    </div>
+                `).join('');
+                resultsGrid.appendChild(column);
+            }
+
+            analysisDiv.appendChild(resultsGrid);
+            resultsContainer.appendChild(analysisDiv);
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const searchQuery = 
