@@ -314,3 +314,179 @@
     </script>
 </body>
 </html>
+<style>
+    /* ... previous styles remain ... */
+
+    .word-section {
+        margin-bottom: 2rem;
+        border: 1px solid rgba(78, 205, 196, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 1rem;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .section-content {
+        padding: 1rem;
+        background: white;
+    }
+
+    .result-item {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--accent-color);
+        transition: transform 0.2s ease;
+    }
+
+    .result-item:hover {
+        transform: translateX(4px);
+    }
+
+    .result-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .result-freq {
+        float: right;
+        background: var(--primary-gradient);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .result-word {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(78, 205, 196, 0.2);
+    }
+
+    .word-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .detail-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-label {
+        color: var(--accent-color);
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .word-details {
+            grid-template-columns: 1fr;
+        }
+    }
+</style><script>
+    // ... previous functions remain the same ...
+
+    function displayResults(originalText, results) {
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = '';
+
+        if (!results.length) {
+            resultsContainer.innerHTML = '<p>No results found.</p>';
+            return;
+        }
+
+        // Display original text
+        const analysisDiv = document.createElement('div');
+        analysisDiv.className = 'word-analysis';
+        
+        // Add original text section
+        const originalSection = document.createElement('div');
+        originalSection.className = 'word-section';
+        originalSection.innerHTML = `
+            <div class="section-header">Original Text</div>
+            <div class="section-content">
+                <div class="result-word">${originalText}</div>
+            </div>
+        `;
+        analysisDiv.appendChild(originalSection);
+
+        // Group results by word and type
+        const groupedResults = {};
+        results.forEach(result => {
+            const key = `${result.word}-${result.type}`;
+            if (!groupedResults[key]) {
+                groupedResults[key] = {
+                    word: result.word,
+                    type: result.type,
+                    data: []
+                };
+            }
+            groupedResults[key].data = groupedResults[key].data.concat(result.data);
+        });
+
+        // Display each group in its own section
+        Object.values(groupedResults).forEach(group => {
+            const section = document.createElement('div');
+            section.className = 'word-section';
+            
+            const typeLabel = group.type === 'tughep' ? 'Compound Word' : 'Single Character';
+            section.innerHTML = `
+                <div class="section-header">${typeLabel}: ${group.word}</div>
+                <div class="section-content">
+                    ${group.data.map(item => {
+                        const frequency = item.frequency ? 
+                            `<div class="result-freq">Frequency: ${item.frequency}</div>` : '';
+                        
+                        return `
+                            <div class="result-item">
+                                ${frequency}
+                                <div class="result-word">${item.word}</div>
+                                <div class="word-details">
+                                    ${group.type === 'tughep' ? `
+                                        <div class="detail-item">
+                                            <span class="detail-label">Traditional:</span>
+                                            ${item.traditional || '-'}
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Pinyin:</span>
+                                            ${item.pinyin || '-'}
+                                        </div>
+                                    ` : ''}
+                                    <div class="detail-item">
+                                        <span class="detail-label">Han Viet:</span>
+                                        ${item.hanviet}
+                                    </div>
+                                    ${group.type === 'tughep' ? `
+                                        <div class="detail-item">
+                                            <span class="detail-label">Meaning:</span>
+                                            ${item.meaning || '-'}
+                                        </div>
+                                    ` : `
+                                        <div class="detail-item">
+                                            <span class="detail-label">Pronunciation:</span>
+                                            ${item.pronunciation || '-'}
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            analysisDiv.appendChild(section);
+        });
+
+        resultsContainer.appendChild(analysisDiv);
+    }
+
+    // ... remaining code stays the same ...
+</script>
