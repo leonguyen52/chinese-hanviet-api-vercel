@@ -284,10 +284,10 @@
             <form class="search-form" id="searchForm">
                 <div class="form-group">
                     <label for="searchQuery">Enter Chinese characters or sentence:</label>
-                    <textarea 
-                        id="searchQuery" 
-                        name="searchQuery" 
-                        required 
+                    <textarea
+                        id="searchQuery"
+                        name="searchQuery"
+                        required
                         placeholder="Enter single words, compound words, or complete sentences (e.g., 我们去吃饭)"
                     ></textarea>
                 </div>
@@ -423,6 +423,7 @@
             const compoundWords = Object.keys(groupedResults).filter(word => 
                 word.length > 1 && groupedResults[word].tughep?.length > 0
             );
+
             const originalSection = document.createElement('div');
             originalSection.className = 'word-section';
                 
@@ -465,52 +466,66 @@
             `;
             analysisDiv.appendChild(originalSection);
 
-            const resultsGrid = document.createElement('div');
-            resultsGrid.className = 'results-grid';
+            const singleCharSection = document.createElement('div');
+            singleCharSection.className = 'section-group';
+            let hasSingleChars = false;
 
             Object.entries(groupedResults).forEach(([searchedWord, typeResults]) => {
-                const wordSection = document.createElement('div');
-                wordSection.className = 'word-section';
-                
-                let content = '';
-                
                 if (typeResults.tudon.length > 0) {
+                    hasSingleChars = true;
                     typeResults.tudon.forEach(item => {
-                        content += `
-                            <div class="section-content" id="char-${searchedWord}">
-                                <div class="section-header gradient-header">
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'section-content';
+                        resultDiv.id = `char-${searchedWord}`;
+                        resultDiv.innerHTML = `
+                            <div class="section-header gradient-header">
                                     <span>Single Character: ${searchedWord}</span>
-                                    ${item.frequency ? 
-                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
+                                ${item.frequency ? 
+                                    `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
                                         : ''}
                                 </div>
                                 ${createResultItemHTML(item, 'tudon')}
-                            </div>
                         `;
+                        singleCharSection.appendChild(resultDiv);
             });
         }
+            });
 
+            if (hasSingleChars) {
+                analysisDiv.appendChild(singleCharSection);
+            }
+
+            // Compound Words Section
+            const compoundSection = document.createElement('div');
+            compoundSection.className = 'section-group';
+            let hasCompounds = false;
+
+            // Add all compound word results
+            Object.entries(groupedResults).forEach(([searchedWord, typeResults]) => {
                 if (typeResults.tughep.length > 0) {
+                    hasCompounds = true;
                     typeResults.tughep.forEach(item => {
-                        content += `
-                            <div class="section-content" id="compound-${searchedWord}">
-                                <div class="section-header gradient-header">
-                                    <span>Compound Word: ${searchedWord}</span>
-                                    ${item.frequency ? 
-                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
-                                        : ''}
-                                </div>
-                                ${createResultItemHTML(item, 'tughep')}
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'section-content';
+                        resultDiv.id = `compound-${searchedWord}`;
+                        resultDiv.innerHTML = `
+                            <div class="section-header gradient-header">
+                                <span>Compound Word: ${searchedWord}</span>
+                                ${item.frequency ? 
+                                    `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
+                                    : ''}
                             </div>
+                            ${createResultItemHTML(item, 'tughep')}
                         `;
-            });
-        }
-
-                wordSection.innerHTML = content;
-                resultsGrid.appendChild(wordSection);
+                        compoundSection.appendChild(resultDiv);
+                    });
+                }
             });
 
-            analysisDiv.appendChild(resultsGrid);
+            if (hasCompounds) {
+                analysisDiv.appendChild(compoundSection);
+            }
+
             resultsContainer.appendChild(analysisDiv);
         }
 
