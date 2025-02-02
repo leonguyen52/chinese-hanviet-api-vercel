@@ -157,6 +157,28 @@
             margin-right: 0.5rem;
         }
 
+        .character-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.2rem 0.4rem;
+            margin: 0 0.1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .character-link:hover {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .result-word {
+            padding: 1rem;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -315,13 +337,23 @@
             
             const originalSection = document.createElement('div');
             originalSection.className = 'word-section';
+            const characters = originalText.split('').map(char => {
+                if (containsChinese(char)) {
+                    return `<a href="#char-${char}" class="character-link">${char}</a>`;
+                }
+                return char;
+            }).join('');
+            
             originalSection.innerHTML = `
                 <div class="section-header gradient-header">Original Text</div>
                 <div class="section-content">
-                    <div class="result-word">${originalText}</div>
+                    <div class="result-word" style="font-size: 1.2rem; line-height: 1.8;">${characters}</div>
                 </div>
             `;
             analysisDiv.appendChild(originalSection);
+
+            const resultsGrid = document.createElement('div');
+            resultsGrid.className = 'results-grid';
 
             const groupedResults = {};
             results.forEach(result => {
@@ -334,15 +366,28 @@
                 groupedResults[result.word][result.type] = result.data;
             });
 
-            const resultsGrid = document.createElement('div');
-            resultsGrid.className = 'results-grid';
-
             Object.entries(groupedResults).forEach(([searchedWord, typeResults]) => {
                 const wordSection = document.createElement('div');
                 wordSection.className = 'word-section';
                 
                 let content = '';
                 
+                if (typeResults.tudon.length > 0) {
+                    typeResults.tudon.forEach(item => {
+                    content += `
+                            <div class="section-content" id="char-${searchedWord}">
+                                <div class="section-header gradient-header">
+                                    <span>Single Character: ${searchedWord}</span>
+                                    ${item.frequency ? 
+                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
+                                        : ''}
+                        </div>
+                                ${createResultItemHTML(item, 'tudon')}
+                            </div>
+                        `;
+                    });
+                }
+
                 if (typeResults.tughep.length > 0) {
                     typeResults.tughep.forEach(item => {
                     content += `
@@ -354,22 +399,6 @@
                                         : ''}
                         </div>
                                 ${createResultItemHTML(item, 'tughep')}
-                            </div>
-                        `;
-                    });
-                }
-
-                if (typeResults.tudon.length > 0) {
-                    typeResults.tudon.forEach(item => {
-                    content += `
-                        <div class="section-content">
-                                <div class="section-header gradient-header">
-                                    <span>Single Character: ${searchedWord}</span>
-                                    ${item.frequency ? 
-                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
-                                        : ''}
-                        </div>
-                                ${createResultItemHTML(item, 'tudon')}
                             </div>
                         `;
             });
