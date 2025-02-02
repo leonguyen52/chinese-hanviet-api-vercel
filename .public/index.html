@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese-Han Viet Cognates API</title>
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --secondary-color: #db2777;
+            --accent-color: #8b5cf6;
+            --text-color: #1f2937;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-container {
+            background-color: #1a1a1a;
+            color: #4ECDC4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .demo-link {
+            display: block;
+            margin: 0.5rem 0;
+            color: #4ECDC4;
+            font-family: monospace;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .demo-link:hover {
+            color: #FF6B6B;
+        }
+
+        header p {
+            color: white;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            header {
+                padding: 1.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Chinese-Han Viet Cognates API</h1>
+            <p>A modern API for looking up Chinese and Han Viet cognates</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>Overview</h2>
+            <p>An API built using json-server that allows you to look up Chinese and Han Viet cognates. This project, originally started by ryanphung, has been updated with a new database to match specific requirements.</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">23,940+</div>
+                    <div>Tughep Words</div>
+                    <small>(2 Chinese words)</small>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">11,411+</div>
+                    <div>Tudon Words</div>
+                    <small>(single Chinese word)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Demo</h2>
+            <p>Try these example API endpoints:</p>
+            <div class="demo-container">
+                <a href="https://your-domain/tughep?word_like=可" class="demo-link">https://your-domain/tughep?word_like=可</a>
+                <a href="https://your-domain/tughep?hanviet=trạng%20thái" class="demo-link">https://your-domain/tughep?hanviet=trạng%20thái</a>
+                <a href="https://your-domain/tudon?word_like=可" class="demo-link">https://your-domain/tudon?word_like=可</a>
+                <a href="https://your-domain/tudon?hanviet=trạng%20thái" class="demo-link">https://your-domain/tudon?hanviet=trạng%20thái</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
