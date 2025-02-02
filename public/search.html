@@ -271,9 +271,63 @@
                 text-align: center;
             }
         }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-to-top svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .back-to-top svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <button class="back-to-top" id="backToTop" title="Back to Original Text">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 4l-8 8h6v8h4v-8h6z"/>
+        </svg>
+    </button>
     <header>
         <h1>Chinese-Han Viet Dictionary</h1>
         <p>Enter Chinese characters or sentences for instant translation</p>
@@ -540,6 +594,38 @@
 
             handleSearch(searchQuery);
         });
+        // Add the back to top functionality
+            const backToTopButton = document.getElementById('backToTop');
+
+            function toggleBackToTopButton() {
+                const originalSection = document.querySelector('.gradient-header');
+                if (!originalSection) {
+                    backToTopButton.classList.remove('visible');
+                    return;
+                }
+
+                const scrollPosition = window.scrollY;
+                const originalSectionPosition = originalSection.offsetTop;
+
+                if (scrollPosition > originalSectionPosition + window.innerHeight) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            }
+
+            backToTopButton.addEventListener('click', function() {
+                const originalSection = document.querySelector('.gradient-header');
+                if (originalSection) {
+                    originalSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // Listen for scroll events to show/hide the button
+            window.addEventListener('scroll', toggleBackToTopButton);
+
+            // Initial check for button visibility
+            toggleBackToTopButton();
     </script>
 </body>
 </html>
