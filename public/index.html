@@ -191,29 +191,45 @@
             font-weight: normal;
         }
 
+        .demo-response {
+            margin-top: 1.5rem;
+        }
+
+        .response-label {
+            color: #4ECDC4;
+            font-family: monospace;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .json-response {
+            background-color: #1a1a1a;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            color: #4ECDC4;
+        }
+
         @media (max-width: 768px) {
             .quick-link {
                 min-width: 200px;
             }
-        }
-
-        @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
-
             .stats {
                 flex-direction: column;
             }
-
             h1 {
                 font-size: 1.8rem;
             }
-
             header {
                 padding: 1.5rem 0;
             }
-
             .github-link {
                 position: relative;
                 top: auto;
@@ -226,10 +242,7 @@
 </head>
 <body>
     <header>
-        <a href="https://github.com/leonguyen52/chinese-hanviet-api-vercel" 
-           class="github-link" 
-           target="_blank" 
-           rel="noopener noreferrer">
+        <a href="https://github.com/leonguyen52/chinese-hanviet-api-vercel" class="github-link" target="_blank" rel="noopener noreferrer">
             <i class="fab fa-github"></i>
             <span>View on GitHub</span>
         </a>
@@ -242,7 +255,7 @@
     <main class="container">
         <div class="card">
             <h2>About This Project</h2>
-            <p>An API built using json-server that allows you to look up Chinese and Han Viet cognates. 
+            <p>An API built using json-server that allows you to look up Chinese and Han Viet cognates.<br>
                 This project was originally started by Ryanphung and I updated it with a new database to match my own use.</p>
             
             <div class="stats">
@@ -264,17 +277,38 @@
             <p>Try these example API endpoints:</p>
             <div class="demo-container" id="demoContainer">
             </div>
+            
+            <div class="demo-response">
+                <p>Sample Response - Từ Ghép:</p>
+                <div class="json-response">[{
+    "chinese word ranking": 0,
+    "frequency": 2837.94,
+    "word": "我们",
+    "traditional": "我們",
+    "pinyin": "wǒmen",
+    "hanviet": "ngã môn",
+    "meaning": "chúng ta/chúng tôi/chúng tao/chúng tớ"
+}]</div>
+
+                <p>Sample Response - Từ Đơn:</p>
+                <div class="json-response">[{
+    "word": "人",
+    "hanviet": "nhân",
+    "pronunciation": "r: uốn cong lưới đầu lưỡi đặt ở ngạc cứng hàm răng trên: đọc là ân"
+}]</div>
+        </div>
         </div>
     </main>
 
     <script>
         const baseUrl = window.location.origin;
-
         const demoExamples = [
-            '/tughep?word_like=可',
-            '/tughep?hanviet=trạng%20thái',
+            '/tughep?word_like=可是',
+            '/tughep?hanviet=nhân%20vi',
+            '/tughep?meaning=còn%20có',
+            'tughep?pinyin=zhèxiē',
             '/tudon?word_like=可',
-            '/tudon?hanviet=trạng%20thái'
+            '/tudon?hanviet=nhất'
         ];
 
         document.getElementById('tughepLink').href = `${baseUrl}/tughep`;
