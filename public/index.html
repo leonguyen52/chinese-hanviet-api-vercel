@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chinese-Han Viet Cognates API</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #6d28d9;
@@ -40,6 +41,32 @@
             color: white;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .github-link {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .github-link i {
+            font-size: 1.2rem;
         }
 
         h1 {
@@ -127,6 +154,28 @@
             opacity: 0.9;
         }
 
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .quick-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .quick-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -143,11 +192,26 @@
             header {
                 padding: 1.5rem 0;
             }
+
+            .github-link {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 1rem auto;
+                width: fit-content;
+            }
         }
     </style>
 </head>
 <body>
     <header>
+        <a href="https://github.com/leonguyen52/chinese-hanviet-api-vercel" 
+           class="github-link" 
+           target="_blank" 
+           rel="noopener noreferrer">
+            <i class="fab fa-github"></i>
+            <span>View on GitHub</span>
+        </a>
         <div class="container">
             <h1>Chinese-Han Viet Cognates API</h1>
             <p>A modern API for looking up Chinese and Han Viet cognates</p>
@@ -156,18 +220,19 @@
 
     <main class="container">
         <div class="card">
-            <h2>Overview</h2>
-            <p>An API built using json-server that allows you to look up Chinese and Han Viet cognates. This project, originally started by ryanphung, has been updated with a new database to match specific requirements.</p>
+            <h2>About This Project</h2>
+            <p>An API built using json-server that allows you to look up Chinese and Han Viet cognates. 
+                This project was originally started by Ryanphung and I updated it with a new database to match my own use.</p>
             
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number">23,940+</div>
-                    <div>Tughep Words</div>
+                    <div><a href="javascript:void(0)" class="quick-link" id="tughepLink">Tu Ghep - Compound Words</a></div>
                     <small>(2 Chinese words)</small>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">11,411+</div>
-                    <div>Tudon Words</div>
+                    <div><a href="javascript:void(0)" class="quick-link" id="tudonLink">Tu Don - Single Word</a></div>
                     <small>(single Chinese word)</small>
                 </div>
             </div>
@@ -176,13 +241,33 @@
         <div class="card">
             <h2>Demo</h2>
             <p>Try these example API endpoints:</p>
-            <div class="demo-container">
-                <a href="https://your-domain/tughep?word_like=可" class="demo-link">https://your-domain/tughep?word_like=可</a>
-                <a href="https://your-domain/tughep?hanviet=trạng%20thái" class="demo-link">https://your-domain/tughep?hanviet=trạng%20thái</a>
-                <a href="https://your-domain/tudon?word_like=可" class="demo-link">https://your-domain/tudon?word_like=可</a>
-                <a href="https://your-domain/tudon?hanviet=trạng%20thái" class="demo-link">https://your-domain/tudon?hanviet=trạng%20thái</a>
+            <div class="demo-container" id="demoContainer">
             </div>
         </div>
     </main>
+
+    <script>
+        const baseUrl = window.location.origin;
+
+        const demoExamples = [
+            '/tughep?word_like=可',
+            '/tughep?hanviet=trạng%20thái',
+            '/tudon?word_like=可',
+            '/tudon?hanviet=trạng%20thái'
+        ];
+
+        document.getElementById('tughepLink').href = `${baseUrl}/tughep`;
+        document.getElementById('tudonLink').href = `${baseUrl}/tudon`;
+
+        const demoContainer = document.getElementById('demoContainer');
+        demoExamples.forEach(example => {
+            const fullUrl = `${baseUrl}${example}`;
+            const link = document.createElement('a');
+            link.href = fullUrl;
+            link.className = 'demo-link';
+            link.textContent = fullUrl;
+            demoContainer.appendChild(link);
+        });
+    </script>
 </body>
 </html>
