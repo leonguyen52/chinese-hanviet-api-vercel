@@ -250,6 +250,24 @@
                 width: 100%;
             }
         }
+        .section-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        }
+
+        .header-section {
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .section-header-flex {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -413,18 +431,25 @@
             }).join('');
                 
             originalSection.innerHTML = `
-                <div class="section-header gradient-header">Text Analysis</div>
+                <div class="section-header gradient-header section-header-flex">
+                    <div class="header-section">
+                        <span>Original Text</span>
+                    </div>
+                    ${compoundWords.length > 0 ? `
+                        <div class="header-section">
+                            <span>Compound Words Found</span>
+                        </div>
+                    ` : ''}
+                </div>
                 <div class="section-content">
                     <div class="analysis-flex-container">
                         <div class="original-text-section">
-                            <div class="analysis-subtitle">Original Text:</div>
                             <div class="result-word" style="font-size: 1.2rem; line-height: 1.8;">
                                 ${characters}
-                        </div>
                             </div>
+                        </div>
                         ${compoundWords.length > 0 ? `
                             <div class="compound-words-section">
-                                <div class="analysis-subtitle">Compound Words Found:</div>
                                 <div class="compound-links">
                                     ${compoundWords.map(word => 
                                         `<a href="#compound-${word}" class="compound-link">${word}</a>`
@@ -432,9 +457,9 @@
                                 </div>
                             </div>
                         ` : ''}
-                        </div>
-                            </div>
-                        `;
+                    </div>
+                </div>
+            `;
             analysisDiv.appendChild(originalSection);
 
             const resultsGrid = document.createElement('div');
