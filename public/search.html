@@ -121,11 +121,13 @@
         }
 
         .frequency-badge {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a1a;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.9rem;
-            backdrop-filter: blur(5px);
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .section-content {
@@ -141,14 +143,19 @@
             border-left: 4px solid var(--accent-color);
         }
 
-        .word-details {
+            .word-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
-        }
+            }
 
         .detail-item {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .detail-item br {
+            margin-bottom: 0.3rem;
         }
 
         .detail-label {
@@ -234,6 +241,52 @@
             return words;
         }
 
+        function sanitizeText(text) {
+            if (!text) return '-';
+            text = text.replace(/,\s*$/, '');
+            text = text.replace(/\\r|\\n/g, '<br>');
+            text = text.replace(/^["']|["']$/g, '');
+            return text;
+        }
+        function createResultItemHTML(item, type) {
+            return `
+                <div class="result-item">
+                    <div class="word-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Chinese Word:</span>
+                            ${sanitizeText(item.word)}
+                        </div>
+                        ${type === 'tughep' ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Traditional:</span>
+                                ${sanitizeText(item.traditional)}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Pinyin:</span>
+                                ${sanitizeText(item.pinyin)}
+                            </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <span class="detail-label">Han Viet:</span>
+                            ${sanitizeText(item.hanviet)}
+                        </div>
+                        ${type === 'tughep' ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Meaning:</span>
+                                ${sanitizeText(item.meaning)}
+                            </div>
+                        ` : `
+                            <div class="detail-item">
+                                <span class="detail-label">Pronunciation:</span>
+                                ${sanitizeText(item['pronunciation,'] || item.pronunciation)}
+                            </div>
+                        `}
+                    </div>
+                </div>
+
+            `;
+        }
+
         async function searchWord(word, type) {
             try {
                 const endpoint = type === 'compound' ? 'tughep' : 'tudon';
@@ -244,44 +297,6 @@
                 console.error('Error searching word:', word, error);
                 return { data: [], type: endpoint };
             }
-        }
-
-        function createResultItemHTML(item, type) {
-            return `
-                <div class="result-item">
-                    <div class="word-details">
-                        <div class="detail-item">
-                            <span class="detail-label">Chinese Word:</span>
-                            ${item.word}
-                        </div>
-                        ${type === 'tughep' ? `
-                            <div class="detail-item">
-                                <span class="detail-label">Traditional:</span>
-                                ${item.traditional || '-'}
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Pinyin:</span>
-                                ${item.pinyin || '-'}
-                            </div>
-                        ` : ''}
-                        <div class="detail-item">
-                            <span class="detail-label">Han Viet:</span>
-                            ${item.hanviet}
-                        </div>
-                        ${type === 'tughep' ? `
-                            <div class="detail-item">
-                                <span class="detail-label">Meaning:</span>
-                                ${item.meaning || '-'}
-                            </div>
-                        ` : `
-                            <div class="detail-item">
-                                <span class="detail-label">Pronunciation:</span>
-                                ${item.pronunciation || '-'}
-                            </div>
-                        `}
-                    </div>
-                </div>
-            `;
         }
 
         async function handleSearch(text) {
@@ -397,3 +412,10 @@
     </script>
 </body>
 </html>
+
+                                    ${item.frequency ? 
+                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
+                                    ${item.frequency ? 
+                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>` 
+                                    ${item.frequency ?
+                                        `<span class="frequency-badge">Frequency: ${item.frequency}</span>`
