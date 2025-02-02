@@ -276,7 +276,7 @@
                         ` : `
                             <div class="detail-item">
                                 <span class="detail-label">Pronunciation:</span>
-                                ${item.pronunciation || '-'}
+                                ${item.pronunciation?.replace(/[\r\n]/g, '<br>') || '-'}
                             </div>
                         `}
                     </div>
