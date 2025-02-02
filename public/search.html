@@ -101,41 +101,43 @@
             border-radius: 8px;
         }
 
-        .word-original {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: var(--primary-gradient);
-            color: white;
-            border-radius: 8px;
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--accent-color);
+            margin: 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .result-divider {
+            margin: 1.5rem 0;
+            border: none;
+            border-top: 1px dashed rgba(78, 205, 196, 0.3);
         }
 
         .result-item {
-            background: var(--card-bg);
+            background: #f8fafc;
             border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin: 1rem 0;
             border-left: 4px solid var(--accent-color);
         }
 
-        .result-type {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-            background: var(--primary-gradient);
-            color: white;
+        .section-content {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .result-item div {
-            margin-bottom: 0.5rem;
+        .word-section {
+            margin-bottom: 2rem;
         }
 
-        .result-item span {
-            font-weight: 500;
-            color: var(--accent-color);
+        .word-section:last-child {
+            margin-bottom: 0;
         }
 
         .loading {
@@ -174,7 +176,6 @@
             </form>
 
             <div class="results-container" id="results">
-                <!-- Results will be populated here -->
             </div>
         </div>
     </div>
@@ -182,28 +183,22 @@
     <script>
         const baseUrl = window.location.origin;
 
-        // Helper function to check if a string contains Chinese characters
         function containsChinese(str) {
             return /[\u4E00-\u9FFF]/.test(str);
         }
 
-        // Helper function to split Chinese text into words
         function splitChineseText(text) {
-            // Remove any non-Chinese characters and spaces
             const cleanText = text.replace(/[^\u4E00-\u9FFF]/g, '');
-            
             const words = [];
             let i = 0;
             
             while (i < cleanText.length) {
-                // Try to match 2 characters first (compound words)
                 if (i + 1 < cleanText.length) {
                     words.push({
                         word: cleanText.slice(i, i + 2),
                         type: 'compound'
                     });
                 }
-                // Always include single character
                 words.push({
                     word: cleanText.slice(i, i + 1),
                     type: 'single'
@@ -229,11 +224,8 @@
         async function handleSearch(text) {
             const words = splitChineseText(text);
             const results = [];
-
-            // Show loading state
             document.getElementById('results').innerHTML = '<div class="loading">Analyzing text...</div>';
 
-            // Search for each word combination
             for (const wordObj of words) {
                 const result = await searchWord(wordObj.word, wordObj.type);
                 if (result.data.length > 0) {
@@ -247,6 +239,48 @@
             displayResults(text, results);
         }
 
+        function createResultItemHTML(item, type) {
+            const frequency = item.frequency ? 
+                `<div class="result-freq">Frequency: ${item.frequency}</div>` : '';
+            
+            return `
+                <div class="result-item">
+                    ${frequency}
+                    <div class="word-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Chinese Word:</span>
+                            ${item.word}
+                        </div>
+                        ${type === 'tughep' ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Traditional:</span>
+                                ${item.traditional || '-'}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Pinyin:</span>
+                                ${item.pinyin || '-'}
+                            </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <span class="detail-label">Han Viet:</span>
+                            ${item.hanviet}
+                        </div>
+                        ${type === 'tughep' ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Meaning:</span>
+                                ${item.meaning || '-'}
+                            </div>
+                        ` : `
+                            <div class="detail-item">
+                                <span class="detail-label">Pronunciation:</span>
+                                ${item.pronunciation || '-'}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
         function displayResults(originalText, results) {
             const resultsContainer = document.getElementById('results');
             resultsContainer.innerHTML = '';
@@ -256,50 +290,65 @@
                 return;
             }
 
-            // Display original text
             const analysisDiv = document.createElement('div');
             analysisDiv.className = 'word-analysis';
-            analysisDiv.innerHTML = `
-                <div class="word-original">Original text: ${originalText}</div>
+            
+            const originalSection = document.createElement('div');
+            originalSection.className = 'word-section';
+            originalSection.innerHTML = `
+                <div class="section-header">Original Text</div>
+                <div class="section-content">
+                    <div class="result-word">${originalText}</div>
+                </div>
             `;
+            analysisDiv.appendChild(originalSection);
 
+            const groupedResults = {};
             results.forEach(result => {
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'result-item';
-
-                const typeLabel = result.type === 'tughep' ? 'Compound Word' : 'Single Character';
-                
-                let content = `
-                    <div class="result-type">${typeLabel}: ${result.word}</div>
-                `;
-
-                result.data.forEach(item => {
-                    if (result.type === 'tughep') {
-                        content += `
-                            <div><span>Chinese Word:</span> ${item.word}</div>
-                            <div><span>Traditional:</span> ${item.traditional || '-'}</div>
-                            <div><span>Pinyin:</span> ${item.pinyin || '-'}</div>
-                            <div><span>Han Viet:</span> ${item.hanviet}</div>
-                            <div><span>Meaning:</span> ${item.meaning || '-'}</div>
-                            ${item.frequency ? `<div><span>Frequency:</span> ${item.frequency}</div>` : ''}
-                        `;
-                    } else {
-                        content += `
-                            <div><span>Chinese Word:</span> ${item.word}</div>
-                            <div><span>Han Viet:</span> ${item.hanviet}</div>
-                            <div><span>Pronunciation:</span> ${item.pronunciation || '-'}</div>
-                        `;
-                    }
-                });
-
-                resultDiv.innerHTML = content;
-                analysisDiv.appendChild(resultDiv);
+                if (!groupedResults[result.word]) {
+                    groupedResults[result.word] = {
+                        tughep: [],
+                        tudon: []
+                    };
+                }
+                groupedResults[result.word][result.type] = result.data;
             });
 
+            const resultsGrid = document.createElement('div');
+            resultsGrid.className = 'results-grid';
+
+            Object.entries(groupedResults).forEach(([searchedWord, typeResults]) => {
+                const wordSection = document.createElement('div');
+                wordSection.className = 'word-section';
+                
+                let content = '';
+                
+                if (typeResults.tughep.length > 0) {
+                    content += `
+                        <div class="section-content">
+                            <div class="section-subtitle">Compound Word: ${searchedWord}</div>
+                            ${typeResults.tughep.map(item => createResultItemHTML(item, 'tughep')).join('<hr class="result-divider">')}
+                        </div>
+                    `;
+                }
+
+                if (typeResults.tudon.length > 0) {
+                    content += `
+                        <div class="section-content">
+                            <div class="section-subtitle">Single Character: ${searchedWord}</div>
+                            ${typeResults.tudon.map(item => createResultItemHTML(item, 'tudon')).join('<hr class="result-divider">')}
+                        </div>
+                    `;
+                }
+
+                wordSection.innerHTML = content;
+                resultsGrid.appendChild(wordSection);
+            });
+
+            analysisDiv.appendChild(resultsGrid);
             resultsContainer.appendChild(analysisDiv);
         }
 
-        // Form submission handling
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const searchQuery = document.getElementById('searchQuery').value.trim();
