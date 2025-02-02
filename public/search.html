@@ -110,7 +110,7 @@
 
         .gradient-header {
             background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-            color: white;
+            color: rgb(10, 37, 73);
             padding: 1rem 1.5rem;
             border-radius: 8px 8px 0 0;
             font-weight: 500;
@@ -261,6 +261,7 @@
                 const endpoint = type === 'compound' ? 'tughep' : 'tudon';
                 const response = await fetch(`${baseUrl}/${endpoint}?word_like=${encodeURIComponent(word)}`);
                 const data = await response.json();
+                console.log(`Response for ${word} (${endpoint}):`, data);
                 return { data, type: endpoint };
             } catch (error) {
                 console.error('Error searching word:', word, error);
@@ -269,6 +270,7 @@
         }
 
         function createResultItemHTML(item, type) {
+            console.log('Item being rendered:', item);
             return `
                 <div class="result-item">
                     <div class="word-details">
@@ -298,7 +300,7 @@
                         ` : `
                             <div class="detail-item">
                                 <span class="detail-label">Pronunciation:</span>
-                                ${item.pronunciation?.replace(/[\r\n]/g, '<br>') || '-'}
+                                ${item['pronunciation'] || item['pronunciation '] || '-'}
                             </div>
                         `}
                     </div>
