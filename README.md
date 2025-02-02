@@ -16,6 +16,8 @@ It will be divided into 2 type "tughep" (2 chinese words) and "tudon" (single ch
 Also support rewrite, check in /api/server.js
 * https://json-server-in.vercel.app/api/posts
 
+![Powered by Vercel](https://images.ctfassets.net/e5382hct74si/78Olo8EZRdUlcDUFQvnzG7/fa4cdb6dc04c40fceac194134788a0e2/1618983297-powered-by-vercel.svg)
+
 ### How to use
 
 1. Click "**Use this template**" or clone this repository.
@@ -25,6 +27,12 @@ Also support rewrite, check in /api/server.js
 5. In the "**Configure Project**" screen, leave everything default and click "**Deploy**".
 6. Wait until deployment is done, and your own JSON server is ready to serve!
 
+
+## Enable write operations
+
+By default, only GET operation is allowed, thanks to the contribution by [@VicAv99](https://www.github.com/VicAv99) at [#6](https://github.com/kitloong/json-server-vercel/issues/6), we can now enable write operations as well.
+
+You can find the example code in [`api/server.js`](./api/server.js).
 
 ## Reference
 
