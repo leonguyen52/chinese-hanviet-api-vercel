@@ -40,6 +40,8 @@ Sample Response - Từ Đơn:
 ```
 
 ## Search Web App
-I also created a simple HTML Web App to query based on this API. 
+I also created a simple HTML Web App to query based on this API (Vercel use). </br>
+And we also have another PHP version to host in different place which will need $api_base to be filled before using.</br>
+
 You can fill in multiple Chinese words and it will break down to query data and return result
 ![Alt text](/../main/screenshots/ScreenShot%202025-02-03%20at%2005.30.39.jpg?raw=true "Search App")
